@@ -52,3 +52,18 @@ def analyze_password(password):
         strength = "Strong"
 
     return score, strength, suggestions
+if __name__ == "__main__":
+
+    password = input("Enter password: ")
+
+    score, strength, suggestions = analyze_password(password)
+
+    print("\nPassword Analysis")
+    print("-----------------")
+    print(f"Score: {score}")
+    print(f"Strength: {strength}")
+
+    if suggestions:
+        print("\nSuggestions:")
+        for s in suggestions:
+            print("-", s)
