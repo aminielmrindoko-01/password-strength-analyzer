@@ -1,55 +1,54 @@
 import re
 
-
 def analyze_password(password):
     score = 0
     suggestions = []
 
-    if len(password) >= 8:
-        score += 1
+    # 1. LENGTH (MOST IMPORTANT)
+    if len(password) >= 12:
+        score += 3
+    elif len(password) >= 8:
+        score += 2
     else:
-        suggestions.append("Use at least 8 characters")
+        score += 0
+        suggestions.append("Use at least 8–12 characters")
 
-    if re.search(r"[A-Z]", password):
-        score += 1
-    else:
-        suggestions.append("Add uppercase letters")
-
+    # 2. LOWERCASE
     if re.search(r"[a-z]", password):
         score += 1
     else:
         suggestions.append("Add lowercase letters")
 
+    # 3. UPPERCASE
+    if re.search(r"[A-Z]", password):
+        score += 1
+    else:
+        suggestions.append("Add uppercase letters")
+
+    # 4. NUMBERS
     if re.search(r"\d", password):
         score += 1
     else:
         suggestions.append("Add numbers")
 
-    if re.search(r"[!@#$%^&*()_+=]", password):
-        score += 1
+    # 5. SPECIAL CHARACTERS (VERY IMPORTANT)
+    if re.search(r"[!@#$%^&*()_+=\-{}[\]:;\"'<>?,./]", password):
+        score += 2
     else:
-        suggestions.append("Add special characters")
+        suggestions.append("Add special characters (!@#$ etc.)")
 
-    if score <= 2:
+    # 6. COMMON WEAK PASSWORD CHECK
+    weak_passwords = ["password", "123456", "qwerty", "admin"]
+    if password.lower() in weak_passwords:
+        score = 0
+        suggestions = ["This is a very common weak password"]
+
+    # STRENGTH CLASSIFICATION
+    if score <= 3:
         strength = "Weak"
-    elif score <= 4:
+    elif score <= 6:
         strength = "Medium"
     else:
         strength = "Strong"
 
     return score, strength, suggestions
-
-
-password = input("Enter password: ")
-
-score, strength, tips = analyze_password(password)
-
-print("\nPassword Analysis")
-print("-----------------")
-print(f"Score: {score}/5")
-print(f"Strength: {strength}")
-
-if tips:
-    print("\nSuggestions:")
-    for tip in tips:
-        print("-", tip)
